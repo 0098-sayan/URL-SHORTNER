@@ -1,8 +1,16 @@
-import { generateNanoid } from "../utils/helper";
+import { getShortUrl } from "../dao/short_url.js";
+import { shortUrlWithoutUser } from "../sevices/short_url.service.js";
+import { generateNanoid } from "../utils/helper.js";
 
 export const createShortUrl = async (req, res) => {
   const { url } = req.body;
 
- const shortUrl = await shortUrlService(url);
- res.send(shortUrl);
+ const shortUrl = await shortUrlWithoutUser(url);
+ res.send(process.env.APP_URL + shortUrl);
 };
+
+export const redirectFromShortUrl = async (req, res) => {
+  const { id } = req.params;
+  const url = await getShortUrl(id);
+ res.redirect(url.full_url);
+}

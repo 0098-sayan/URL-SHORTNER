@@ -5,23 +5,19 @@ mongoose.connect("mongodb://localhost:27017/shorturl");
 import { nanoid } from "nanoid";
 import short_url from "./src/routes/shortUrl.routes.js";
 import dotenv from "dotenv";
+import { redirectFromShortUrl } from "./src/controller/short_url.controller.js";
+import { getShortUrl } from "./src/dao/short_url.js";
 dotenv.config("./.env");
-import urlSchema from "./src/models/shorturl.model.js";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/api/create",short_url)
+app.use("/api/create",short_url)
 
-app.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const url = await urlSchema.findOne({ short_url: id });
-  if (url) {
-    return res.redirect(url.full_url);
-  } else {
-    res.status(404).send("URL not found");
-  }
+app.get('/:id', async (req, res) => {
+  const shortUrl = await getShortUrl(req.params.id); 
 });
+
 
 app.listen(3000, () => {
   console.log("Server is running on port http://localhost:3000");
